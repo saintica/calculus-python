@@ -6,7 +6,11 @@ from PIL import Image
 # Set up the figure, axis, and plot element
 fig, ax = plt.subplots()
 x = np.linspace(0, 2 * np.pi, 1000)
-line, = ax.plot(x, np.sin(x))
+
+def f(x):
+    return np.sin(2*x)
+
+line, = ax.plot(x, f(x))
 
 # Setting the limits of x and y axes
 ax.set_xlim(0, 2 * np.pi)
@@ -18,7 +22,7 @@ interval = 50  # Time between frames in milliseconds
 
 # Function to update the frame
 def update(frame):
-    line.set_ydata(np.sin(x + frame / 10.0))  # Shift the sine wave
+    line.set_ydata(f(x + frame / 10.0))  # Shift the sine wave
     return line,
 
 # Creating the animation
