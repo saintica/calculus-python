@@ -15,7 +15,7 @@ def df_dy(x, y):
 # Set up the figure and 3D axis
 fig = plt.figure(figsize=(10, 7))
 ax = fig.add_subplot(111, projection='3d')
-plt.subplots_adjust(left=0.1, bottom=0.25)
+plt.subplots_adjust(left=0, bottom=0.25, right=0.5, top=0.9)
 
 # Create a meshgrid for the surface plot
 x = np.linspace(-np.pi, np.pi, 100)
@@ -26,6 +26,11 @@ z = f(x, y)
 # Plot the surface
 surf = ax.plot_surface(x, y, z, rstride=5, cstride=5, alpha=0.6, cmap='viridis')
 
+# Set labels
+ax.set_xlabel('X axis')
+ax.set_ylabel('Y axis')
+ax.set_zlabel('Z axis')
+
 # Initialize a point and tangent lines
 point, = ax.plot([0], [0], [f(0, 0)], 'ro')
 tangent_line_x, = ax.plot([], [], [], 'b', linewidth=2)
@@ -33,8 +38,8 @@ tangent_line_y, = ax.plot([], [], [], 'g', linewidth=2)
 
 # Slider axes
 axcolor = 'lightgoldenrodyellow'
-ax_x = plt.axes([0.1, 0.1, 0.65, 0.03], facecolor=axcolor)
-ax_y = plt.axes([0.1, 0.15, 0.65, 0.03], facecolor=axcolor)
+ax_x = plt.axes([0.6, 0.4, 0.2, 0.03], facecolor=axcolor)
+ax_y = plt.axes([0.6, 0.5, 0.2, 0.03], facecolor=axcolor)
 
 # Sliders
 s_x = Slider(ax_x, 'X', -np.pi, np.pi, valinit=0)
