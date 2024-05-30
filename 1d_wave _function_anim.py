@@ -63,5 +63,8 @@ def update(frame):
 # Create the animation
 ani = FuncAnimation(fig, update, frames=200, interval=50, blit=True)
 
+# Save the animation as a GIF
+ani.save('1d_wave_function.gif', writer='pillow', fps=30)
+
 # Display the animation
 plt.show()
