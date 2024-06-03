@@ -77,7 +77,7 @@ def update(val):
     ax.set_xlabel("$x$")
     ax.set_ylabel("$f(x)$")
     ax.legend()
-    ax.text(0.5 * (a + b), 0.5, f"Integral $\\approx {integral:.6f}$", horizontalalignment='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
+    ax.text(0.5 * (a + b), 0.5*max(y), f"Integral $\\approx {integral:.6f}$", horizontalalignment='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
     plt.draw()
 
 a = 0
