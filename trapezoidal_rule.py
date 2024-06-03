@@ -48,6 +48,6 @@ plt.ylabel("f(x)")
 plt.legend()
 
 # Display the result of the integration on the plot
-plt.text(0.5 * (a + b), 0.5, f"Integral ≈ {integral:.6f}", horizontalalignment='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
+plt.text(0.5 * (a + b), max(y)*0.5, f"Integral ≈ {integral:.6f}", horizontalalignment='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
 
 plt.show()
