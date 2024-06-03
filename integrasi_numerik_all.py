@@ -102,7 +102,7 @@ ax.set_title(f"Function $f(x) = {func_str}$ and its Integral with Partitions (Re
 ax.set_xlabel("$x$")
 ax.set_ylabel("$f(x)$")
 ax.legend()
-ax.text(0.5 * (a + b), 0.5, f"Integral $\\approx {integral:.6f}$", horizontalalignment='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
+ax.text(0.5 * (a + b), 0.5*max(y), f"Integral $\\approx {integral:.6f}$", horizontalalignment='center', fontsize=12, bbox=dict(facecolor='white', alpha=0.5))
 
 axbox_n = plt.axes([0.1, 0.15, 0.1, 0.075])
 n_text_box = TextBox(axbox_n, 'n: ', initial=str(n))
