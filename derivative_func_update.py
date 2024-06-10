@@ -37,7 +37,8 @@ def submit_function(expression):
         y = f(x)
 
         # Update title
-        ax.set_title(fr'$\text{{f(x): }} {expression} \quad \text{{df(x): }} {str(df_expr)}$', pad=20)
+        ax.set_title(fr'$\text{{df(x): }} {str(df_expr)}$')
+        plt.suptitle(fr'$\text{{f(x): }} {expression}$')
 
         update_plot(ax.get_xlim()[0], ax.get_xlim()[1])
     except Exception as e:
@@ -87,7 +88,7 @@ def main():
     x_sym = symbols('x')
 
     # Initial function and its derivative using sympy
-    function_str = 'sin(x)'
+    function_str = 'sin(x*x)'
     f_expr = sympify(function_str, locals={'sin': sin, 'cos': cos,'tan':tan, 'exp': exp, 'log': log})
     f = lambdify(x_sym, f_expr, 'numpy')
     df = lambdify(x_sym, diff(f_expr, x_sym), 'numpy')
@@ -123,11 +124,15 @@ def main():
     # Create animation
     ani = FuncAnimation(fig, animate, init_func=init, frames=len(x), interval=25, blit=True)
 
+    # save animation
+    #ani.save('derivative.gif', writer='pillow', fps=60)
+
     # Show plot
     ax.grid(True)
     ax.set_xlabel('x')
     ax.set_ylabel('f(x)')
-    ax.set_title(fr'$\text{{f(x): }} {function_str} \quad \text{{df(x): }} {str(diff(f_expr, x_sym))}$', pad=20)
+    ax.set_title(fr'$\text{{df(x): }} {str(diff(f_expr, x_sym))}$')
+    plt.suptitle(fr'$\text{{f(x): }} {function_str}$')
     plt.show()
 
 if __name__ == "__main__":
