@@ -124,6 +124,7 @@ def main():
     ani = FuncAnimation(fig, animate, init_func=init, frames=len(x), interval=25, blit=True)
 
     # Show plot
+    ax.grid(True)
     ax.set_xlabel('x')
     ax.set_ylabel('f(x)')
     ax.set_title(fr'$\text{{f(x): }} {function_str} \quad \text{{df(x): }} {str(diff(f_expr, x_sym))}$', pad=20)
