@@ -4,7 +4,7 @@ from sympy import symbols, sympify, lambdify, limit
 from matplotlib.widgets import TextBox, Slider
 
 # Function to plot the curve and update the y-value and limits
-sld = 2
+sld_off = 2
 
 def plot_function():
     try:
@@ -27,8 +27,8 @@ def plot_function():
         ax.axvline(left_lim, color='blue', linestyle='--', label=f'Left Limit ({left_lim})')
         ax.axvline(right_lim, color='green', linestyle='--', label=f'Right Limit ({right_lim})')
         ax.set_title('Function Plot')
-        ax.set_xlabel('x')
-        ax.set_ylabel('f(x)')
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
         ax.legend()
         ax.grid(True)
         
@@ -37,14 +37,19 @@ def plot_function():
         
         left_limit_value = limit(func_sympy, x, left_lim)
         right_limit_value = limit(func_sympy, x, right_lim)
+        
+        # Compute the limit of the function at the specified x value
+        func_limit = limit(func_sympy, x, x_val)
+        func_limit_value = float(func_limit) if func_limit is not None else np.nan
+
         left_limit_label.set_text(f"Left limit as x -> {left_lim}: {left_limit_value}")
         right_limit_label.set_text(f"Right limit as x -> {right_lim}: {right_limit_value}")
         
         # Update slider limits
-        left_slider.valmin = x_val - sld
+        left_slider.valmin = x_val - sld_off
         left_slider.valmax = x_val
         right_slider.valmin = x_val
-        right_slider.valmax = x_val + sld
+        right_slider.valmax = x_val + sld_off
 
         # Redraw the sliders with new boundaries
         left_slider.ax.set_xlim(left_slider.valmin, left_slider.valmax)
@@ -59,12 +64,12 @@ def on_release(event):
         plot_function()
 
 # Initial function and x value
-initial_func = 'x**2'
-initial_x_val = 0
+initial_func = 'sin(x**2-4)/(x-2)'
+initial_x_val = 2
 
 # Create figure and axes
 fig, ax = plt.subplots(figsize=(10, 6))
-plt.subplots_adjust(left=0.1, right=0.9, top=0.95, bottom=0.45)
+plt.subplots_adjust(left=0.1, right=0.9, top=0.95, bottom=0.5)
 
 # Add text boxes for function and x value input
 axbox_func = plt.axes([0.1, 0.32, 0.3, 0.05])
@@ -77,22 +82,25 @@ x_value_text.on_submit(lambda text: plot_function())
 
 # Add labels to display y value and limits
 axlabel_y = plt.axes([0.1, 0.25, 0.8, 0.05], facecolor='lightgoldenrodyellow')
-axlabel_y.set_axis_off()
+axlabel_y.set_xticks([])
+axlabel_y.set_yticks([])
 y_label = axlabel_y.text(0.1, 0.5, '', transform=axlabel_y.transAxes, fontsize=10)
 
 axlabel_left = plt.axes([0.1, 0.2, 0.8, 0.05], facecolor='lightgoldenrodyellow')
-axlabel_left.set_axis_off()
+axlabel_left.set_xticks([])
+axlabel_left.set_yticks([])
 left_limit_label = axlabel_left.text(0.1, 0.5, '', transform=axlabel_left.transAxes, fontsize=10)
 
 axlabel_right = plt.axes([0.1, 0.15, 0.8, 0.05], facecolor='lightgoldenrodyellow')
-axlabel_right.set_axis_off()
+axlabel_right.set_xticks([])
+axlabel_right.set_yticks([])
 right_limit_label = axlabel_right.text(0.1, 0.5, '', transform=axlabel_right.transAxes, fontsize=10)
 
 # Add sliders for left and right limits
-ax_slider_left = plt.axes([0.1, 0.1, 0.3, 0.03], facecolor='lightgoldenrodyellow')
-left_slider = Slider(ax_slider_left, 'Lim Kiri', initial_x_val - sld, initial_x_val, valinit=initial_x_val - 1)
-ax_slider_right = plt.axes([0.6, 0.1, 0.3, 0.03], facecolor='lightgoldenrodyellow')
-right_slider = Slider(ax_slider_right, 'Lim Kanan', initial_x_val, initial_x_val + sld, valinit=initial_x_val + 1)
+ax_slider_left = plt.axes([0.1, 0.08, 0.3, 0.03], facecolor='lightgoldenrodyellow')
+left_slider = Slider(ax_slider_left, 'Left Limit', initial_x_val - sld_off, initial_x_val, valinit=initial_x_val - 1)
+ax_slider_right = plt.axes([0.6, 0.08, 0.3, 0.03], facecolor='lightgoldenrodyellow')
+right_slider = Slider(ax_slider_right, 'Right Limit', initial_x_val, initial_x_val + sld_off, valinit=initial_x_val + 1)
 
 # Connect release event to the on_release function
 fig.canvas.mpl_connect('button_release_event', on_release)
