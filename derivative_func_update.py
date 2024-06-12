@@ -3,8 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import TextBox
 from sympy import symbols, diff, lambdify, sympify, sin, cos, tan, exp, log
+#import matplotlib import cm
 
-x_sym = symbols('x')  # Define x_sym globally
+# Define x_sym globally
+x_sym = symbols('x')
 
 def update_plot(x_min, x_max):
     try:
@@ -52,7 +54,6 @@ def init():
     tangent_line.set_data([], [])
     return point, tangent_line
 
-
 def animate(i):
     # Update x values based on current x limits
     x_new = np.linspace(ax.get_xlim()[0], ax.get_xlim()[1], 400)
@@ -78,23 +79,26 @@ def animate(i):
     # Set the tangent line data
     tangent_line.set_data(tangent_x, tangent_y)
 
+    # Update the line color
+    color = cmap(i / len(x))
+    line.set_color(color)
+
     return line, point, tangent_line
 
-
 def main():
-    global x, f, df, ax, line, point, tangent_line, text_box_xmin, text_box_xmax, text_box_function
+    global x, f, df, ax, line, point, tangent_line, text_box_xmin, text_box_xmax, text_box_function, cmap
 
     # Symbol for sympy
     x_sym = symbols('x')
 
     # Initial function and its derivative using sympy
-    function_str = 'sin(x*x)'
+    function_str = 'exp(-x)*sin(3*x)'
     f_expr = sympify(function_str, locals={'sin': sin, 'cos': cos,'tan':tan, 'exp': exp, 'log': log})
     f = lambdify(x_sym, f_expr, 'numpy')
     df = lambdify(x_sym, diff(f_expr, x_sym), 'numpy')
 
     # Generate x values
-    x = np.linspace(-2 * np.pi, 2 * np.pi, 400)
+    x = np.linspace(0, 2 * np.pi, 400)
     y = f(x)
 
     # Set up the figure, axis, and plot elements
@@ -103,6 +107,9 @@ def main():
     line, = ax.plot(x, y, lw=2)
     point, = ax.plot([], [], 'ro')
     tangent_line, = ax.plot([], [], 'r--', lw=2)
+
+    # Create a colormap
+    cmap = plt.get_cmap('hsv')
 
     # Set up the text box for function input
     axbox_function = plt.axes([0.15, 0.25, 0.75, 0.05])
@@ -124,7 +131,7 @@ def main():
     # Create animation
     ani = FuncAnimation(fig, animate, init_func=init, frames=len(x), interval=25, blit=True)
 
-    # save animation
+    # Save animation
     #ani.save('derivative.gif', writer='pillow', fps=60)
 
     # Show plot
