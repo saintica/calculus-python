@@ -5,15 +5,15 @@ class RiemannSum(Scene):
     def construct(self):
         # Define the function to integrate
         def func(x):
-            return np.sin(x)
+            return 2*np.exp(-x/2)*np.sin(3*x)
         
         # Axis
         axes = Axes(
             x_range=[0, PI, PI/4],
-            y_range=[0, 1.5, 0.5],
-            axis_config={"include_tip": False}
+            y_range=[-1.5, 2.0, 0.5],
+            axis_config={"include_tip": True}
         )
-        labels = axes.get_axis_labels(x_label="x", y_label="f(x)")
+        labels = axes.get_axis_labels(x_label="X", y_label="Y")
         x_label = MathTex(r"\pi").next_to(axes.x_axis.get_end(), DOWN)
         y_label = MathTex(r"1").next_to(axes.y_axis.get_end(), LEFT)
         
@@ -21,7 +21,7 @@ class RiemannSum(Scene):
         func_graph = axes.plot(func, x_range=[0, PI], color=BLUE)
         
         # Title
-        title = Tex("Riemann Sum Approximation of $\\int_0^\\pi \\sin(x)dx$").to_edge(UP)
+        title = Tex("Riemann Sum Approximation of $\\int_0^\\pi 2 e^{-x/2} \\sin(3x)dx$").to_edge(UP)
         
         # Add axes, labels, and title to the scene
         self.play(Create(axes), Create(labels), Write(x_label), Write(y_label))
