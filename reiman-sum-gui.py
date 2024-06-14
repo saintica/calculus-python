@@ -1,87 +1,122 @@
-from cProfile import label
-from operator import mod
-from statistics import mode
-from drawchart import drawChart
-from turtle import title
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, RadioButtons
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.widgets import TextBox, Slider
+from sympy import symbols, lambdify, sympify, sin, cos, tan, exp, log
 
-# membuat window
+# Define x_sym globally
+x_sym = symbols('x')
 
-radio_background = 'lightgoldenrodyellow'
-wx = 8  # lebar window
-wy = 4  # tinggi window
+def update_plot(x_min, x_max):
+    try:
+        x_min = float(x_min)
+        x_max = float(x_max)
+        ax.set_xlim((x_min, x_max))
 
-fig = plt.figure(figsize=(wx, wy))
-fig.canvas.manager.set_window_title("Jumlah Reimann")
+        # Update x and y values for the function
+        x_new = np.linspace(x_min, x_max, 400)
+        y_new = f(x_new)
+        line.set_data(x_new, y_new)
 
-# membuat kotak tampilan foto
-a = 0.06    # gap kiri
-b = 0.1     # gap bawah
-w = 0.6     # lebar
-h = 0.8     # tinggi
+        # Update y limits based on the new function data
+        ax.set_ylim((np.min(y_new) - 0.5, np.max(y_new) + 0.5))
 
-# axes
-axChart = fig.add_axes([a, b, w, h])
-axChart.set_title("Jumlah Reimann")
+        update_riemann_sum(x_min, x_max, slider.val)
+        plt.draw()
+    except ValueError:
+        print("Please enter valid numeric values for x limits.")
 
-axMode = fig.add_axes([2*a+w, 0.7, 0.8-w, h/4])
-axMode.set_title("Mode")
+def submit_function(expression):
+    global f, x, y
+    try:
+        # Update the function
+        f_expr = sympify(expression, locals={'sin': sin, 'cos': cos, 'tan': tan, 'exp': exp, 'log': log, 'x': x_sym})
+        f = lambdify(x_sym, f_expr, 'numpy')
 
-axA = fig.add_axes([2*a+w, 0.5, 0.8-w, h/10])
-axB = fig.add_axes([2*a+w, 0.42, 0.8-w, h/10])
-axN = fig.add_axes([2*a+w, 0.3, 0.8-w, h/10])
-axRes = fig.add_axes([2*a+w, 0.1, 0.8-w, h/8])
+        # Update y values
+        y = f(x)
 
-# widgets
-sldrA = Slider(axA, valmin=-5, valmax=10, valinit=0, label='a')
-sldrB = Slider(axB, valmin=-5, valmax=10, valinit=5, label='b')
-sldrN = Slider(axN, valmin=1, valmax=100, valstep=1, valinit=5, label="N")
+        # Update title
+        ax.set_title(fr'$\text{{f(x): }} {expression}$')
 
-axRes.set_title("Hasil")
+        update_plot(ax.get_xlim()[0], ax.get_xlim()[1])
+    except Exception as e:
+        print(f"Error in expression: {e}")
 
-# SET MODE
-axMode.set_facecolor(radio_background)
-radio = RadioButtons(ax=axMode, labels=('left', 'mid', 'right'))
+def submit_x_limits(text):
+    update_plot(text_box_xmin.text, text_box_xmax.text)
 
-# ------------
-chart = drawChart()
-chart.plot(axis=axChart, x0=0, x1=5, N=8, pos='left')
+def update_riemann_sum(x_min, x_max, n):
+    x_vals = np.linspace(x_min, x_max, int(n) + 1)
+    y_vals = f((x_vals[:-1] + x_vals[1:]) / 2)
+    heights = y_vals
+    widths = (x_max - x_min) / n
 
-# SET MODE
-axMode.set_facecolor(radio_background)
-radio = RadioButtons(ax=axMode, labels=('left', 'mid', 'right'))
+    # Clear existing rectangles
+    for patch in reversed(ax.patches):
+        patch.remove()
 
+    # Add new rectangles
+    for x_val, height in zip(x_vals[:-1], heights):
+        rect = plt.Rectangle((x_val, 0), widths, height, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        ax.add_patch(rect)
+    
+    riemann_sum = np.sum(heights * widths)
+    sum_label.set_text(f'Riemann Sum: {riemann_sum:.4f}')
+    plt.draw()
 
-def updatemode(label):
-    chart.updatepos(pos=label)
-    fig.canvas.draw()
+def update_partitions(val):
+    update_riemann_sum(ax.get_xlim()[0], ax.get_xlim()[1], val)
+    plt.draw()
 
+def main():
+    global x, f, ax, line, text_box_xmin, text_box_xmax, text_box_function, slider, sum_label
 
-radio.on_clicked(updatemode)
+    # Symbol for sympy
+    x_sym = symbols('x')
 
+    # Initial function using sympy
+    function_str = 'exp(-x)*sin(3*x)'
+    f_expr = sympify(function_str, locals={'sin': sin, 'cos': cos, 'tan': tan, 'exp': exp, 'log': log})
+    f = lambdify(x_sym, f_expr, 'numpy')
 
-def sliderA(event):
-    x0 = sldrA.val
-    chart.plot(axis=axChart, x0=x0)
+    # Generate x values
+    x = np.linspace(0, 2 * np.pi, 400)
+    y = f(x)
 
+    # Set up the figure, axis, and plot elements
+    fig, ax = plt.subplots()
+    plt.subplots_adjust(bottom=0.4)  # Adjust to make space for text boxes and slider
+    line, = ax.plot(x, y, lw=2)
 
-sldrA.on_changed(sliderA)       # x0
+    # Set up the text box for function input
+    axbox_function = plt.axes([0.15, 0.3, 0.75, 0.05])
+    text_box_function = TextBox(axbox_function, 'f(x): ', initial=function_str)
+    text_box_function.on_submit(submit_function)
 
+    # Text boxes for adjusting x min and max limits
+    axbox_xmin = plt.axes([0.15, 0.2, 0.3, 0.05])
+    axbox_xmax = plt.axes([0.6, 0.2, 0.3, 0.05])
+    text_box_xmin = TextBox(axbox_xmin, 'X Min', initial=str(x[0]))
+    text_box_xmax = TextBox(axbox_xmax, 'X Max', initial=str(x[-1]))
 
-def sliderB(event):
-    x1 = sldrB.val
-    chart.plot(axis=axChart, x1=x1)
+    text_box_xmin.on_submit(submit_x_limits)
+    text_box_xmax.on_submit(submit_x_limits)
 
+    # Slider for adjusting the number of partitions
+    ax_slider = plt.axes([0.15, 0.1, 0.75, 0.03])
+    slider = Slider(ax_slider, 'Partitions', 1, 100, valinit=50, valstep=1)
+    slider.on_changed(update_partitions)
 
-sldrB.on_changed(sliderB)       # x1
+    # Label to display the Riemann sum
+    sum_label = ax.text(0.05, 0.95, '', transform=ax.transAxes, fontsize=14, verticalalignment='top')
 
+    # Show plot
+    ax.grid(True)
+    ax.set_xlabel('x')
+    ax.set_ylabel('f(x)')
+    ax.set_title(fr'$\text{{f(x): }} {function_str}$')
+    update_riemann_sum(x[0], x[-1], slider.val)
+    plt.show()
 
-def sliderN(event):
-    N = sldrN.val
-
-
-sldrN.on_changed(sliderN)
-
-plt.show()
+if __name__ == "__main__":
+    main()
