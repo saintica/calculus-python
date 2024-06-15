@@ -29,6 +29,9 @@ def plot_polar_function(ax, function, theta_min, theta_max, int_min, int_max):
     ax.set_xlabel(r'$\theta$')
     ax.set_ylabel('')
     
+    ax_result.clear()
+    ax_result.set_xticks([])
+    ax_result.set_yticks([])
     ax_result.text(0.1, 0.4, rf"Integral Result: $\int_{{{int_min:.2f}}}^{{{int_max:.2f}}} r(\theta) \, d\theta = {integral_result:.2f}$")
 
     plt.draw()
